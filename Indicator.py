@@ -1,25 +1,25 @@
-def getStockPrice( stock, timeLength, date ):
-	baseIndex = stock.get_index_of_date( date )
-	priceArray = stock.closes[ baseIndex - timeLength + 1 : baseIndex + 1 ]
+def getStockPrice( stock, timeLength, day ):
+	baseIndex = stock.get_index_of_date( day )
+	priceArray = stock.p_close[ baseIndex - timeLength + 1 : baseIndex + 1 ]
 	return priceArray
 
-def EMA_Stock( stock, timeLength, date ):
-	priceArray = getStockPrice( stock, timeLength, date )
+def EMA_Stock( stock, timeLength, day ):
+	priceArray = getStockPrice( stock, timeLength, day )
 	return EMA( priceArray )
 
 def EMA( inputArray ):
 	inputLength = len( inputArray )
 	returnValue = 0
-	for i in range( 0, inputLength ):
+	for i in range( 0, inputLength - 1 ):
 		k = 2 / ( ( i + 1 ) + 1 )
 		returnValue = inputArray[ i ] * k + datereturnValue * [ 1 - k ] 
 	return returnValue
 
-def ForceIndex( stock, indexLength, date ):
+def ForceIndex( stock, indexLength, day ):
 	forceIndexArray = []
-	baseIndex = stock.get_index_of_date( date )
-	for i in range( indexLength - 1, -1, -1 ):
-		forceIndexArray.append( ( stock.closes[ baseIndex - i ] - stock.closes[ baseIndex - i - 1 ] ) * stock.volumns[ baseIndex - i ] )
+	baseIndex = stock.get_index_of_date( day )
+	for i in range( indexLength - 1, 0, -1 ):
+		forceIndexArray.append( ( stock.p_close[ baseIndex - i ] - stock.p_close[ baseIndex - i - 1 ] ) * stock.volumns[ baseIndex - i ] )
 	return EMA( forceIndexArray )
 
 def MA( inputArray ):
@@ -29,20 +29,27 @@ def MA( inputArray ):
 		sum += i
 	return float( sum ) / inputLength
 
-def MA_Stock( stock, timeLength, date ):
-	priceArray = getStockPrice( stock, timeLength, date )
+def MA_Stock( stock, timeLength, day ):
+	priceArray = getStockPrice( stock, timeLength, day )
 	return MA( priceArray )
 
-def BollingBand_Stock( stock, timeLength, date ):
-	priceArray = getStockPrice( stock, timeLength, date )
+def BollingBand_Stock( stock, timeLength, day ):
+	priceArray = getStockPrice( stock, timeLength, day )
 	return BollingBand( priceArray )
 
 def BollingBand( inputArray ):
 	midBand = MA( inputArray )
-	for i in range(len( inputArray ) ):
+	for i in range( 0, len( inputArray ) - 1 ):
 		inputArray[ i ] -= midBand
 		inputArray[ i ] = inputArray[ i ] ** 2
 	std = math.sqrt( sum( inputArray ) / len( inputArray ) )
 	upBand = midBand + std
 	lowBand = midBand - std
 	return ( lowBand, midBand, upBand )
+
+def MACD_Line_Stock( stock, shortLength, longLength, day ):
+	return EMA_Stock( stock, shortLength, day ) - EMA_Stock( stock, longLength, day )
+
+def MACD_Stock( stock, shortLength, longLength, signalLength, day ):
+	macdLines = []
+	
