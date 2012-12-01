@@ -55,4 +55,5 @@ def MACD_Line_Stock( stock, shortLength, longLength, day ):
 def MACD_Stock( stock, shortLength, longLength, signalLength, day ):
     macdLines = []
     for i in range( signalLength - 1, -1, -1 ):
-        macdLines.append( MACD_Line_Stock( stock, shortLength, longLength, day )
+        macdLines.append( MACD_Line_Stock( stock, shortLength, longLength, day ) )
+
