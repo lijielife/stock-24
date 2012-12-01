@@ -21,7 +21,7 @@ def ForceIndex( stock, indexLength, day ):
     forceIndexArray = []
     baseIndex = stock.get_index_of_date( day )
     for i in range( indexLength - 1, 0, -1 ):
-        forceIndexArray.append( ( stock.closes[ baseIndex - i ] - stock.closes[ baseIndex - i - 1 ] ) * stock.volumns[ baseIndex - i ] )
+        forceIndexArray.append( ( stock.closes[ baseIndex - i ] - stock.closes[ baseIndex - i - 1 ] ) * stock.volumes[ baseIndex - i ] )
     return EMA( forceIndexArray )
 
 def MA( inputArray ):
@@ -56,4 +56,3 @@ def MACD_Stock( stock, shortLength, longLength, signalLength, day ):
     macdLines = []
     for i in range( signalLength - 1, -1, -1 ):
         macdLines.append( MACD_Line_Stock( stock, shortLength, longLength, day ) )
-
