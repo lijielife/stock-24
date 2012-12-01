@@ -20,9 +20,9 @@ class Stock():
         self.volumns.append(int(volumn))
         self.days += 1
     
-    def get_index_of_date(self, date):
+    def get_index_of_date(self, day):
     	for i in range(self.days-1, -1, -1):
-    		if self.dates[i] <= date:
+    		if self.dates[i] <= day:
     			return i
 
 
