@@ -2,7 +2,7 @@ from datetime import date, datetime, timedelta
 
 def getStockPrice( stock, timeLength, day ):
 	baseIndex = stock.get_index_of_date( day )
-	priceArray = stock.p_close[ baseIndex - timeLength + 1 : baseIndex + 1 ]
+	priceArray = stock.closes[ baseIndex - timeLength + 1 : baseIndex + 1 ]
 	return priceArray
 
 def EMA_Stock( stock, timeLength, day ):
@@ -21,7 +21,7 @@ def ForceIndex( stock, indexLength, day ):
 	forceIndexArray = []
 	baseIndex = stock.get_index_of_date( day )
 	for i in range( indexLength - 1, 0, -1 ):
-		forceIndexArray.append( ( stock.p_close[ baseIndex - i ] - stock.p_close[ baseIndex - i - 1 ] ) * stock.volumns[ baseIndex - i ] )
+		forceIndexArray.append( ( stock.closes[ baseIndex - i ] - stock.closes[ baseIndex - i - 1 ] ) * stock.volumns[ baseIndex - i ] )
 	return EMA( forceIndexArray )
 
 def MA( inputArray ):

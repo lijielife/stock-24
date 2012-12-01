@@ -34,10 +34,10 @@ def analyze():
     for key in stocks:
         stock = stocks[key]
         for i in range(14,16):         
-            today_10 = EMA_Stock(stock, 10, (datetime.now() - timedelta(days=i)).date)
-            today_20 = EMA_Stock(stock, 20, (datetime.now() - timedelta(days=i)).date)
-            yesterday_10 = EMA_Stock(stock, 10, (datetime.now() - timedelta(days=i+1)).date)
-            yesterday_20 = EMA_Stock(stock, 20, (datetime.now() - timedelta(days=i+1)).date)
+            today_10 = EMA_Stock(stock, 10, (datetime.now() - timedelta(days=i)).date())
+            today_20 = EMA_Stock(stock, 20, (datetime.now() - timedelta(days=i)).date())
+            yesterday_10 = EMA_Stock(stock, 10, (datetime.now() - timedelta(days=i+1)).date())
+            yesterday_20 = EMA_Stock(stock, 20, (datetime.now() - timedelta(days=i+1)).date())
             if yesterday_10 < yesterday_20 and today_10 >= today_20:
                 print stock.ticker, (datetime.now() - timedelta(days=i)).date
 
