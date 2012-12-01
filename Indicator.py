@@ -1,3 +1,5 @@
+from datetime import date, datetime, timedelta
+
 def getStockPrice( stock, timeLength, day ):
 	baseIndex = stock.get_index_of_date( day )
 	priceArray = stock.p_close[ baseIndex - timeLength + 1 : baseIndex + 1 ]
@@ -12,7 +14,7 @@ def EMA( inputArray ):
 	returnValue = 0
 	for i in range( 0, inputLength - 1 ):
 		k = 2 / ( ( i + 1 ) + 1 )
-		returnValue = inputArray[ i ] * k + datereturnValue * [ 1 - k ] 
+		returnValue = inputArray[ i ] * k + returnValue * [ 1 - k ] 
 	return returnValue
 
 def ForceIndex( stock, indexLength, day ):
@@ -52,4 +54,6 @@ def MACD_Line_Stock( stock, shortLength, longLength, day ):
 
 def MACD_Stock( stock, shortLength, longLength, signalLength, day ):
 	macdLines = []
-	
+	for i in range( signalLength - 1, -1, -1 ):
+		macdLines.append( MACD_Line_Stock( stock, shortLength, longLength, day )
+
