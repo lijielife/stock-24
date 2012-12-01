@@ -31,15 +31,20 @@ def load_stocks(folder, days):
 
 
 def analyze():
+    output = open(str(datetime.now().date()), 'w')
     for key in stocks:
         stock = stocks[key]
-        for i in range(14,16):         
-            today_10 = EMA_Stock(stock, 10, (datetime.now() - timedelta(days=i)).date())
-            today_20 = EMA_Stock(stock, 20, (datetime.now() - timedelta(days=i)).date())
-            yesterday_10 = EMA_Stock(stock, 10, (datetime.now() - timedelta(days=i+1)).date())
-            yesterday_20 = EMA_Stock(stock, 20, (datetime.now() - timedelta(days=i+1)).date())
+        for i in range(14,16):
+            day = (datetime.now() - timedelta(days=i)).date()
+            day_before = (datetime.now() - timedelta(days=i+1)).date()         
+            today_10 = EMA_Stock(stock, 10, day)
+            today_20 = EMA_Stock(stock, 20, day)
+            yesterday_10 = EMA_Stock(stock, 10, day_before)
+            yesterday_20 = EMA_Stock(stock, 20, day_before
             if yesterday_10 < yesterday_20 and today_10 >= today_20:
-                print stock.ticker, (datetime.now() - timedelta(days=i)).date
+                output.write(stock.ticker + ',' + str(day))
+
+    output.close()
 
 
         
