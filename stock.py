@@ -21,8 +21,8 @@ class Stock():
         self.days += 1
     
     def get_index_of_date(self, date):
-    	for i in range(self.days):
-    		if self.dates[i] == date:
+    	for i in range(self.days-1, -1, -1):
+    		if self.dates[i] <= date:
     			return i
 
 
