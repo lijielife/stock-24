@@ -11,13 +11,13 @@ class Stock():
         self.closes = []
         self.volumes = []
 
-    def add_data(self, date, p_open, p_high, p_low, p_close, volumn):       
+    def add_data(self, date, p_open, p_high, p_low, p_close, volume):       
         self.dates.append(date)
         self.opens.append(float(p_open))
         self.highs.append(float(p_high))
         self.lows.append(float(p_low))
         self.closes.append(float(p_close))
-        self.volumes.append(int(volumn))
+        self.volumes.append(int(volume))
         self.days += 1
     
     def get_index_of_date(self, day):
