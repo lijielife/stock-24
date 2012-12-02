@@ -1,4 +1,7 @@
 from datetime import date, datetime, timedelta
+import math
+
+CONST_IGNORE_RATIO = 3
 
 def getStockPrice( stock, timeLength, day ):
     baseIndex = stock.get_index_of_date( day )
@@ -6,25 +9,23 @@ def getStockPrice( stock, timeLength, day ):
     return priceArray
 
 def EMA_Stock( stock, timeLength, day ):
-    priceArray = getStockPrice( stock, timeLength, day )
-    return EMA( priceArray )
+    priceArray = getStockPrice( stock, timeLength * CONST_IGNORE_RATIO, day )
+    return EMA( priceArray, timeLength )
 
-def EMA( inputArray ):
+def EMA( inputArray, length ):
     inputLength = len( inputArray )
-    print str( inputLength ) + str( inputArray )
     returnValue = 0
+    k = float( 2 ) / ( length + 1 )
     for i in range( 0, inputLength ):
-        k = float( 2 ) / ( ( i + 1 ) + 1 )
         returnValue = inputArray[ i ] * k + returnValue * ( 1 - k )
-        print str( returnValue ) + ", " + str( k ) + ", " + str( i )
     return returnValue
 
 def ForceIndex( stock, indexLength, day ):
     forceIndexArray = []
     baseIndex = stock.get_index_of_date( day )
-    for i in range( indexLength - 1, 0, -1 ):
+    for i in range( indexLength * CONST_IGNORE_RATIO - 1, 0, -1 ):
         forceIndexArray.append( ( stock.closes[ baseIndex - i ] - stock.closes[ baseIndex - i - 1 ] ) * stock.volumes[ baseIndex - i ] )
-    return EMA( forceIndexArray )
+    return EMA( forceIndexArray, indexLength )
 
 def MA( inputArray ):
     sum = 0
@@ -56,10 +57,10 @@ def MACD_Line_Stock( stock, shortLength, longLength, day ):
 
 def MACD_Stock( stock, shortLength, longLength, signalLength, day ):
     macdLines = []
-    for i in range( signalLength - 1, -1, -1 ):
+    for i in range( signalLength * CONST_IGNORE_RATIO - 1, -1, -1 ):
         macdLines.append( MACD_Line_Stock( stock, shortLength, longLength, day - timedelta( days = i ) ) )
     macdLine = macdLines[ -1 ]
-    signal = EMA( macdLines )
+    signal = EMA( macdLines, signalLength )
     histogram = macdLine - signal
     return ( macdLine, signal, histogram )
 
@@ -78,3 +79,7 @@ def Stochastic_Stock( stock, k_length, d_length, day ):
         ks.append( Stochastic_K( stock, k_length, day ) )
     d = float( sum( ks ) ) / d_length
     return ( ks[ -1 ], d )
+
+def Average_Volume( stock, length, day ):
+    dayIndex = stock.get_index_of_date( day )
+    return float( sum( stock.volumes[ dayIndex - length + 1 : dayIndex + 1 ] ) ) /length
