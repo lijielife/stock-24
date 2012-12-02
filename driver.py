@@ -41,60 +41,52 @@ def analyze():
                     
                 # check EMA rule
                 day_before = (datetime.now() - timedelta(days=i+1)).date()   
-                today_5 = EMA_Stock(stock, 10, day)
-                today_10 = EMA_Stock(stock, 20, day)
+                today_5 = EMA_Stock(stock, 5, day)
+                today_10 = EMA_Stock(stock, 10, day)
                 today_50 = EMA_Stock(stock, 50, day)
-                yesterday_5 = EMA_Stock(stock, 10, day_before)
-                yesterday_10 = EMA_Stock(stock, 20, day_before)
+                yesterday_5 = EMA_Stock(stock, 5, day_before)
+                yesterday_10 = EMA_Stock(stock, 10, day_before)
                 yesterday_50 = EMA_Stock(stock, 50, day_before)
                 is_ema_good = check_ema( ( today_5, today_10, today_50 ), ( yesterday_5, yesterday_10, yesterday_50 ) )
-                print 1
 
                 # check ForceIndex rule
                 force_index_2 = ForceIndex( stock, 2, day )
-                print 1.3
                 force_index_13 = ForceIndex( stock, 13, day )
-                print 1.5
                 is_force_index_good = check_force_index( ( force_index_2, force_index_13 ) )
-                print 2
 
                 # check Bollinger rule
                 bollinger_band = BollingBand_Stock( stock, 20, day )
-                print 2.5
                 is_bollinger_good = check_bollinger( bollinger_band, stock.closes[ dayIndex ] )
-                print 3
 
                 # check price rule
                 is_price_good = check_price( stock.closes[ dayIndex ] )
-                print 4
 
                 # check volume rule
                 is_volume_good = check_volumes( stock, day, dayIndex )
+
+                print 0
+                # check Stochastic rule
+                is_stochastic_good = check_stochastic( stock, 14, 3, 3, day )
                 print 5
 
-                # check Stochastic rule
-
                 # is_ema_good = True
-                # is_force_index_good = True
-                # is_bollinger_good = True
-                # is_price_good = True
-                # is_volume_good = True
+                is_force_index_good = True
+                is_bollinger_good = True
+                is_price_good = True
+                is_volume_good = True
+                is_stochastic_good = True
 
-                if is_ema_good and is_force_index_good and is_bollinger_good and is_price_good and is_volume_good:
-                    print 6
+                if is_ema_good and is_force_index_good and is_bollinger_good and is_price_good and is_volume_good and is_stochastic_good:
                     highest_close_after = max( stock.closes[ dayIndex + 2 : dayIndex + 10 ] )
-                    print 7
                     highest_high_after = max( stock.highs[ dayIndex + 2 : dayIndex + 10 ] )
-                    print 8
                     output.write( str( highest_close_after / stock.closes[ dayIndex ] ) + ", " + str( highest_high_after /  stock.closes[ dayIndex ] ) + " ::: " )      # print the earning ratio
                     output.write(stock.ticker + ',' + str(day) + '\n')
-                    print 9
         except:
             print key + ": not enough data for analyzing"
     output.close() 
 
 def check_ema( now_emas, before_emas ):
-    return before_emas[ 0 ] <= before_emas[ 1 ] and now_emas[ 0 ] > now_emas[ 1 ] #and now_emas[ 0 ] < now_emas[ 2 ] and now_emas[ 1 ] < now_emas[ 2 ] 
+    return before_emas[ 0 ] <= before_emas[ 1 ] and now_emas[ 0 ] > now_emas[ 1 ] and now_emas[ 0 ] < now_emas[ 2 ] and now_emas[ 1 ] < now_emas[ 2 ] 
 
 def check_force_index( force_index_tuple ):
     for force_index in force_index_tuple:
@@ -111,6 +103,9 @@ def check_price( close ):
 def check_volumes( stock, day, dayIndex ):
     recent_max_volume = max( stock.volumes[ dayIndex - 2 : dayIndex ] )
     return recent_max_volume > 1.5 * Average_Volume( stock, 50, day )
+
+def check_stochastic( stock, k_min_max_length, k_smooth_length, d_length, day ):
+    return Stochastic_Stock( stock, k_min_max_length, k_smooth_length, d_length, day ) <= 50
 
 if __name__ == '__main__':
     folder = sys.argv[1]
