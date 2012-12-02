@@ -33,17 +33,21 @@ def load_stocks(folder, days):
 def analyze():
     output = open(str(datetime.now().date()), 'w')
     for key in stocks:
-        stock = stocks[key]
-        for i in range(14,16):
-            day = (datetime.now() - timedelta(days=i)).date()
-            day_before = (datetime.now() - timedelta(days=i+1)).date()         
-            today_10 = EMA_Stock(stock, 10, day)
-            today_20 = EMA_Stock(stock, 20, day)
-            yesterday_10 = EMA_Stock(stock, 10, day_before)
-            yesterday_20 = EMA_Stock(stock, 20, day_before
-            if yesterday_10 < yesterday_20 and today_10 >= today_20:
-                output.write(stock.ticker + ',' + str(day))
-
+        try:
+            stock = stocks[key]
+            for i in range(1, 3):
+                day = (datetime.now() - timedelta(days=i)).date()
+                day_before = (datetime.now() - timedelta(days=i+1)).date()   
+                today_10 = EMA_Stock(stock, 10, day)
+                today_20 = EMA_Stock(stock, 20, day)
+                yesterday_10 = EMA_Stock(stock, 10, day_before)
+                yesterday_20 = EMA_Stock(stock, 20, day_before)
+                if yesterday_10 < yesterday_20 and today_10 >= today_20:
+                    tempIndex = stock.get_index_of_date( day )
+                    output.write( str( tempIndex ) + ", " + str( stock.closes[ tempIndex ] ) + " ::: " )
+                    output.write(stock.ticker + ',' + str(day) + "  :::  " + str( yesterday_10 ) + ", " + str( yesterday_20 ) + ", " + str( today_10 ) + ", " + str( today_20 ) + ", " + '\n')
+        except:
+            print key + ": not enough data for analyzing"
     output.close()
 
 
