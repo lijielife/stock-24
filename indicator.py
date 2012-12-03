@@ -3,13 +3,12 @@ import math
 
 CONST_IGNORE_RATIO = 3
 
-def getStockPrice( stock, timeLength, day ):
-    baseIndex = stock.get_index_of_date( day )
+def getStockPrice( stock, timeLength, baseIndex ):
     priceArray = stock.closes[ baseIndex - timeLength + 1 : baseIndex + 1 ]
     return priceArray
 
-def EMA_Stock( stock, timeLength, day ):
-    priceArray = getStockPrice( stock, timeLength * CONST_IGNORE_RATIO, day )
+def EMA_Stock( stock, timeLength, dayIndex ):
+    priceArray = getStockPrice( stock, timeLength * CONST_IGNORE_RATIO, dayIndex )
     return EMA( priceArray, timeLength )
 
 def EMA( inputArray, length ):
@@ -20,9 +19,9 @@ def EMA( inputArray, length ):
         returnValue = inputArray[ i ] * k + returnValue * ( 1 - k )
     return returnValue
 
-def ForceIndex( stock, indexLength, day ):
+def ForceIndex( stock, indexLength, dayIndex ):
     forceIndexArray = []
-    baseIndex = stock.get_index_of_date( day )
+    baseIndex = dayIndex
     for i in range( indexLength * CONST_IGNORE_RATIO - 1, 0, -1 ):
         forceIndexArray.append( ( stock.closes[ baseIndex - i ] - stock.closes[ baseIndex - i - 1 ] ) * stock.volumes[ baseIndex - i ] )
     return EMA( forceIndexArray, indexLength )
@@ -34,12 +33,12 @@ def MA( inputArray ):
         sum += i
     return float( sum ) / inputLength
 
-def MA_Stock( stock, timeLength, day ):
-    priceArray = getStockPrice( stock, timeLength, day )
+def MA_Stock( stock, timeLength, dayIndex ):
+    priceArray = getStockPrice( stock, timeLength, dayIndex )
     return MA( priceArray )
 
-def BollingBand_Stock( stock, timeLength, day ):
-    priceArray = getStockPrice( stock, timeLength, day )
+def BollingBand_Stock( stock, timeLength, dayIndex ):
+    priceArray = getStockPrice( stock, timeLength, dayIndex )
     return BollingBand( priceArray )
 
 def BollingBand( inputArray ):
@@ -52,21 +51,21 @@ def BollingBand( inputArray ):
     lowBand = midBand - std
     return ( lowBand, midBand, upBand )
 
-def MACD_Line_Stock( stock, shortLength, longLength, day ):
-    return EMA_Stock( stock, shortLength, day ) - EMA_Stock( stock, longLength, day )
+def MACD_Line_Stock( stock, shortLength, longLength, dayIndex ):
+    return EMA_Stock( stock, shortLength, dayIndex ) - EMA_Stock( stock, longLength, dayIndex )
 
-def MACD_Stock( stock, shortLength, longLength, signalLength, day ):
+def MACD_Stock( stock, shortLength, longLength, signalLength, dayIndex ):
     macdLines = []
     for i in range( signalLength * CONST_IGNORE_RATIO - 1, -1, -1 ):
-        macdLines.append( MACD_Line_Stock( stock, shortLength, longLength, day - timedelta( days = i ) ) )
+        macdLines.append( MACD_Line_Stock( stock, shortLength, longLength, dayIndex - i ) )
     macdLine = macdLines[ -1 ]
     signal = EMA( macdLines, signalLength )
     histogram = macdLine - signal
     return ( macdLine, signal, histogram )
 
-def Stochastic_K( stock, k_length, day ):
+def Stochastic_K( stock, k_length, dayIndex ):
     print 1.5
-    baseIndex = stock.get_index_of_date( day )
+    baseIndex = dayIndex
     currentClose = stock.closes[ baseIndex ]
     print 1.6
     highArray = stock.highs[ baseIndex - k_length + 1 : baseIndex + 1 ]
@@ -87,12 +86,12 @@ def Stochastic_Smoothed_K( ks, k_smooth_length, d_length ):
     return smoothed_k
 
 
-def Stochastic_Stock( stock, k_min_max_length, k_smooth_length, d_length, day ):
+def Stochastic_Stock( stock, k_min_max_length, k_smooth_length, d_length, dayIndex ):
     ks = []
     k_array_length = k_smooth_length + d_length - 1
     print str( 1 ) + ", " + str( k_array_length )
     for i in range( k_array_length - 1, -1, -1 ):
-        ks.append( Stochastic_K( stock, k_min_max_length, day - timedelta( days = i ) ) )
+        ks.append( Stochastic_K( stock, k_min_max_length, dayIndex - i ) )
     print 2
     smoothed_k = Stochastic_Smoothed_K( ks, k_smooth_length, d_length )
     print 3
@@ -100,6 +99,5 @@ def Stochastic_Stock( stock, k_min_max_length, k_smooth_length, d_length, day ):
     k = smoothed_k[ -1 ]
     return ( k, d )
 
-def Average_Volume( stock, length, day ):
-    dayIndex = stock.get_index_of_date( day )
+def Average_Volume( stock, length, dayIndex ):
     return float( sum( stock.volumes[ dayIndex - length + 1 : dayIndex + 1 ] ) ) /length
