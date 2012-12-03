@@ -32,15 +32,23 @@ def load_stocks(folder, days):
 
 def analyze():
     output = open(str(datetime.now().date())+'.txt', 'w')
+    lost = 0
+    lost_count = 0
+    total_count = 0
+                
     for key in stocks:
         try:
             stock = stocks[key]
-            for i in range(0, 5):
-                day = (datetime.now() - timedelta(days=i)).date()
-                dayIndex = stock.get_index_of_date( day )
-                    
+            today = datetime.now().date()
+            todayIndex = stock.get_index_of_date( today )
+                
+            for i in range(15, 40):
+                print 1
+                dayIndex = todayIndex - i    
+                print 2
                 # check EMA rule
                 day_before = dayIndex - 1 #(datetime.now() - timedelta(days=i+1)).date()   
+                print 3
                 today_5 = EMA_Stock(stock, 5, dayIndex)
                 today_10 = EMA_Stock(stock, 10, dayIndex)
                 today_50 = EMA_Stock(stock, 50, dayIndex)
@@ -48,26 +56,26 @@ def analyze():
                 yesterday_10 = EMA_Stock(stock, 10, day_before)
                 yesterday_50 = EMA_Stock(stock, 50, day_before)
                 is_ema_good = check_ema( ( today_5, today_10, today_50 ), ( yesterday_5, yesterday_10, yesterday_50 ) , stock, dayIndex)
-
+                print 4
                 # check ForceIndex rule
                 force_index_2 = ForceIndex( stock, 2, dayIndex )
                 force_index_13 = ForceIndex( stock, 13, dayIndex )
                 is_force_index_good = check_force_index( ( force_index_2, force_index_13 ) )
-
+                print 5
                 # check Bollinger rule
                 bollinger_band = BollingBand_Stock( stock, 20, dayIndex )
                 is_bollinger_good = check_bollinger( bollinger_band, stock.closes[ dayIndex ] )
-
+                print 6
                 # check price rule
                 is_price_good = check_price( stock.closes[ dayIndex ] )
-
+                print 7
                 # check volume rule
-                is_volume_good = check_volumes( stock, day, dayIndex )
+                is_volume_good = check_volumes( stock, dayIndex )
                 is_volume2_good = check_volumes2( stock.volumes[ dayIndex ] )
-
+                print 8
                 # check Stochastic rule
                 is_stochastic_good = check_stochastic( stock, 14, 3, 3, dayIndex )
-
+                print 9
                 # is_ema_good = True
                 # is_force_index_good = True
                 # is_bollinger_good = True
@@ -77,14 +85,21 @@ def analyze():
                 #is_stochastic_good = True
 
                 if is_ema_good and is_force_index_good and is_bollinger_good and is_price_good and is_volume_good and is_volume2_good and is_stochastic_good:
-                    highest_close_after = max( stock.closes[ dayIndex : dayIndex + 5] )
-                    highest_high_after = max( stock.highs[ dayIndex : dayIndex + 5] )
-                    output.write( str( highest_close_after / stock.closes[ dayIndex ] ) + ", " + str( highest_high_after /  stock.closes[ dayIndex ] ) + " ::: " )      # print the earning ratio
-                    output.write(stock.ticker + ',' + str(day) + '\n')
-                    print stock.ticker + ',' + str(day)
+                    highest_close_after = max( stock.closes[ dayIndex + 1 : dayIndex + 10] )
+                    lowest_close_after = min( stock.closes[ dayIndex + 1 : dayIndex + 10] )
+                    highest_high_after = max( stock.highs[ dayIndex + 1 : dayIndex + 10] )
+                    output.write( str( highest_close_after / stock.closes[ dayIndex ] ) + ", " + str( highest_high_after /  stock.closes[ dayIndex ] ) + ", " + str( lowest_close_after /  stock.closes[ dayIndex ] ) + " ::: " )      # print the earning ratio
+                    output.write(stock.ticker + ',' + str( stock.dates[ dayIndex ] ) + '\n')
+
+                    total_count += 1
+                    if highest_high_after /  stock.closes[ dayIndex ] < 1.02:
+                        lost += lowest_close_after /  stock.closes[ dayIndex ]
+                        lost_count += 1
+                    print stock.ticker + ',' + str( stock.dates[ dayIndex ] )
         except:
             print key + ": not enough data for analyzing"
     print 'finish';
+    print str( lost / lost_count ) + ", " + str( lost_count ) + ", " + str( total_count - lost_count )
     output.write('finish' + '\n')
     output.close() 
 
@@ -101,9 +116,9 @@ def check_bollinger( bollinger_band, close ):
     return (bollinger_band[ 2 ] - bollinger_band[ 0 ]) >= 0.5
 
 def check_price( close ):
-    return close > 1
+    return close > 5
 
-def check_volumes( stock, day, dayIndex ):
+def check_volumes( stock, dayIndex ):
     recent_max_volume = max( stock.volumes[ dayIndex - 2 : dayIndex ] )
     return recent_max_volume > 1.5 * Average_Volume( stock, 50, dayIndex )
 
