@@ -42,7 +42,7 @@ def analyze():
             today = datetime.now().date()
             todayIndex = stock.get_index_of_date( today )
                 
-            for i in range(15, 40):
+            for i in range(50, 75):
                 print 1
                 dayIndex = todayIndex - i    
                 print 2
@@ -99,7 +99,7 @@ def analyze():
         except:
             print key + ": not enough data for analyzing"
     print 'finish';
-    print str( lost / lost_count ) + ", " + str( lost_count ) + ", " + str( total_count - lost_count )
+    #print str( lost / lost_count ) + ", " + str( lost_count ) + ", " + str( total_count - lost_count )
     output.write('finish' + '\n')
     output.close() 
 
@@ -112,11 +112,11 @@ def check_force_index( force_index_tuple ):
     #return force_index_tuple[ 1 ] > 0
 
 def check_bollinger( bollinger_band, close ):
-    #return close < bollinger_band[ 1 ] and (bollinger_band[ 2 ] - bollinger_band[ 0 ]) >= 0.5
-    return (bollinger_band[ 2 ] - bollinger_band[ 0 ]) >= 0.5
+    return close < bollinger_band[ 1 ] and (bollinger_band[ 2 ] - bollinger_band[ 0 ]) >= 0.5
+    #return (bollinger_band[ 2 ] - bollinger_band[ 0 ]) >= 0.5
 
 def check_price( close ):
-    return close > 5
+    return close > 1
 
 def check_volumes( stock, dayIndex ):
     recent_max_volume = max( stock.volumes[ dayIndex - 2 : dayIndex ] )
@@ -124,7 +124,7 @@ def check_volumes( stock, dayIndex ):
 
 def check_stochastic( stock, k_min_max_length, k_smooth_length, d_length, dayIndex ):
     pair = Stochastic_Stock( stock, k_min_max_length, k_smooth_length, d_length, dayIndex )
-    return pair[ 0 ] <= 50
+    return pair[ 0 ] <= 70
 
 def check_volumes2( volume ):
     return volume > 10000
