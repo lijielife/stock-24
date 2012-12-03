@@ -65,10 +65,8 @@ def analyze():
                 is_volume_good = check_volumes( stock, day, dayIndex )
                 is_volume2_good = check_volumes2( stock.volumes[ dayIndex ] )
 
-                #print 0
                 # check Stochastic rule
-                is_stochastic_good = check_stochastic( stock, 14, 3, 3, day )
-                #print 5
+                is_stochastic_good = check_stochastic( stock, 14, 3, 3, dayIndex )
 
                 # is_ema_good = True
                 # is_force_index_good = True
@@ -109,8 +107,8 @@ def check_volumes( stock, day, dayIndex ):
     recent_max_volume = max( stock.volumes[ dayIndex - 2 : dayIndex ] )
     return recent_max_volume > 1.5 * Average_Volume( stock, 50, dayIndex )
 
-def check_stochastic( stock, k_min_max_length, k_smooth_length, d_length, day ):
-    pair = Stochastic_Stock( stock, k_min_max_length, k_smooth_length, d_length, day )
+def check_stochastic( stock, k_min_max_length, k_smooth_length, d_length, dayIndex ):
+    pair = Stochastic_Stock( stock, k_min_max_length, k_smooth_length, d_length, dayIndex )
     return pair[ 0 ] <= 50
 
 def check_volumes2( volume ):

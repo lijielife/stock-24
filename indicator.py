@@ -64,37 +64,27 @@ def MACD_Stock( stock, shortLength, longLength, signalLength, dayIndex ):
     return ( macdLine, signal, histogram )
 
 def Stochastic_K( stock, k_length, dayIndex ):
-    print 1.5
     baseIndex = dayIndex
     currentClose = stock.closes[ baseIndex ]
-    print 1.6
     highArray = stock.highs[ baseIndex - k_length + 1 : baseIndex + 1 ]
     lowArray = stock.lows[ baseIndex - k_length + 1 : baseIndex + 1 ]
-    print 1.7
     lowestLow = min( lowArray )
     highestHigh = max( highArray )
-    print 1.8
     return float( currentClose - lowestLow ) / ( highestHigh - lowestLow ) * 100
 
 def Stochastic_Smoothed_K( ks, k_smooth_length, d_length ):
     smoothed_k = []
-    print 2.1
     for i in range( d_length ):
-        print str( i ) + ", " + str( k_smooth_length ) + ", " + str( len( ks ) )
         smoothed_k.append( float( sum( ks[ i : i + k_smooth_length ] ) ) / k_smooth_length )
-    print 2.3
     return smoothed_k
 
 
 def Stochastic_Stock( stock, k_min_max_length, k_smooth_length, d_length, dayIndex ):
     ks = []
     k_array_length = k_smooth_length + d_length - 1
-    print str( 1 ) + ", " + str( k_array_length )
     for i in range( k_array_length - 1, -1, -1 ):
         ks.append( Stochastic_K( stock, k_min_max_length, dayIndex - i ) )
-    print 2
     smoothed_k = Stochastic_Smoothed_K( ks, k_smooth_length, d_length )
-    print 3
     d = float( sum( smoothed_k ) ) / d_length
     k = smoothed_k[ -1 ]
     return ( k, d )
