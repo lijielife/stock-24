@@ -49,11 +49,11 @@ def analyze():
                 # check EMA rule
                 day_before = dayIndex - 1 #(datetime.now() - timedelta(days=i+1)).date()   
                 print 3
-                today_5 = EMA_Stock(stock, 5, dayIndex)
-                today_10 = EMA_Stock(stock, 10, dayIndex)
+                today_5 = EMA_Stock(stock, 10, dayIndex)
+                today_10 = EMA_Stock(stock, 20, dayIndex)
                 today_50 = EMA_Stock(stock, 50, dayIndex)
-                yesterday_5 = EMA_Stock(stock, 5, day_before)
-                yesterday_10 = EMA_Stock(stock, 10, day_before)
+                yesterday_5 = EMA_Stock(stock, 10, day_before)
+                yesterday_10 = EMA_Stock(stock, 20, day_before)
                 yesterday_50 = EMA_Stock(stock, 50, day_before)
                 is_ema_good = check_ema( ( today_5, today_10, today_50 ), ( yesterday_5, yesterday_10, yesterday_50 ) , stock, dayIndex)
                 print 4
@@ -104,16 +104,16 @@ def analyze():
     output.close() 
 
 def check_ema( now_emas, before_emas , stock, dayIndex):
-    #return before_emas[ 0 ] < before_emas[ 1 ] and now_emas[ 0 ] >= now_emas[ 1 ] and now_emas[ 0 ] < now_emas[ 2 ] and now_emas[ 1 ] < now_emas[ 2 ] 
-    return now_emas[ 0 ] > before_emas[ 0 ] and now_emas[ 1 ] > before_emas[ 1 ] and now_emas[ 0 ] >= now_emas[ 2 ] and now_emas[ 1 ] >= now_emas[ 2 ] and stock.highs[ dayIndex ] >= now_emas[ 0 ]
+    return before_emas[ 0 ] < before_emas[ 1 ] and now_emas[ 0 ] >= now_emas[ 1 ] and now_emas[ 0 ] < now_emas[ 2 ] and now_emas[ 1 ] < now_emas[ 2 ] 
+    #return now_emas[ 0 ] > before_emas[ 0 ] and now_emas[ 1 ] > before_emas[ 1 ] and now_emas[ 0 ] >= now_emas[ 2 ] and now_emas[ 1 ] >= now_emas[ 2 ] and stock.highs[ dayIndex ] >= now_emas[ 0 ]
 
 def check_force_index( force_index_tuple ):
-    return force_index_tuple[ 0 ] > 0 and force_index_tuple[ 1 ] > 0
-    #return force_index_tuple[ 1 ] > 0
+    #return force_index_tuple[ 0 ] > 0 and force_index_tuple[ 1 ] > 0
+    return force_index_tuple[ 1 ] > 0
 
 def check_bollinger( bollinger_band, close ):
-    return close < bollinger_band[ 1 ] and (bollinger_band[ 2 ] - bollinger_band[ 0 ]) >= 0.5
-    #return (bollinger_band[ 2 ] - bollinger_band[ 0 ]) >= 0.5
+    #return close < bollinger_band[ 1 ] and (bollinger_band[ 2 ] - bollinger_band[ 0 ]) >= 0.5
+    return (bollinger_band[ 2 ] - bollinger_band[ 0 ]) >= 0.5
 
 def check_price( close ):
     return close > 1
