@@ -47,8 +47,8 @@ def BollingBand( inputArray ):
         inputArray[ i ] -= midBand
         inputArray[ i ] = inputArray[ i ] ** 2
     std = math.sqrt( float( sum( inputArray ) ) / len( inputArray ) )
-    upBand = midBand + std
-    lowBand = midBand - std
+    upBand = midBand + 2 * std
+    lowBand = midBand - 2 * std
     return ( lowBand, midBand, upBand )
 
 def MACD_Line_Stock( stock, shortLength, longLength, dayIndex ):
