@@ -113,7 +113,7 @@ def check_force_index( force_index_tuple ):
 
 def check_bollinger( bollinger_band, close ):
     #return close < bollinger_band[ 1 ] and (bollinger_band[ 2 ] - bollinger_band[ 0 ]) >= 0.5
-    return (bollinger_band[ 2 ] - bollinger_band[ 0 ]) >= 0.5
+    return (bollinger_band[ 2 ] - bollinger_band[ 0 ]) >= 0.6
 
 def check_price( close ):
     return close > 1
