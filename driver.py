@@ -42,7 +42,7 @@ def analyze():
             today = datetime.now().date()
             todayIndex = stock.get_index_of_date( today )
                 
-            for i in range(50, 75):
+            for i in range(0, 5):
                 print 1
                 dayIndex = todayIndex - i    
                 print 2
@@ -85,9 +85,9 @@ def analyze():
                 #is_stochastic_good = True
 
                 if is_ema_good and is_force_index_good and is_bollinger_good and is_price_good and is_volume_good and is_volume2_good and is_stochastic_good:
-                    highest_close_after = max( stock.closes[ dayIndex + 1 : dayIndex + 10] )
-                    lowest_close_after = min( stock.closes[ dayIndex + 1 : dayIndex + 10] )
-                    highest_high_after = max( stock.highs[ dayIndex + 1 : dayIndex + 10] )
+                    highest_close_after = max( stock.closes[ dayIndex + 0 : dayIndex + 5] )
+                    lowest_close_after = min( stock.closes[ dayIndex + 0 : dayIndex + 5] )
+                    highest_high_after = max( stock.highs[ dayIndex + 0 : dayIndex + 5] )
                     output.write( str( highest_close_after / stock.closes[ dayIndex ] ) + ", " + str( highest_high_after /  stock.closes[ dayIndex ] ) + ", " + str( lowest_close_after /  stock.closes[ dayIndex ] ) + " ::: " )      # print the earning ratio
                     output.write(stock.ticker + ',' + str( stock.dates[ dayIndex ] ) + '\n')
 
@@ -97,7 +97,7 @@ def analyze():
                         lost_count += 1
                     print stock.ticker + ',' + str( stock.dates[ dayIndex ] )
         except:
-            print key + ": not enough data for analyzing"
+            print key + ": not enough data for analysis"
     print 'finish';
     #print str( lost / lost_count ) + ", " + str( lost_count ) + ", " + str( total_count - lost_count )
     output.write('finish' + '\n')
